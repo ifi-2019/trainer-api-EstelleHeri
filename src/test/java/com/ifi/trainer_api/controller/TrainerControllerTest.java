@@ -1,15 +1,13 @@
 package com.ifi.trainer_api.controller;
 
+import com.ifi.trainer_api.bo.Trainer;
 import com.ifi.trainer_api.service.TrainerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -39,6 +37,34 @@ public class TrainerControllerTest {
         trainerController.getTrainer("Ash");
 
         verify(trainerService).getTrainer("Ash");
+    }
+
+    @Test
+    void newTrainer_shouldCallTheService() {
+        var bug = new Trainer();
+        trainerController.newTrainer(bug);
+
+        verify(trainerService).createTrainer(bug);
+    }
+
+    @Test
+    void replaceTrainer_shouldCallTheService() {
+        var bug = new Trainer();
+        bug.setName("Bug");
+        trainerController.newTrainer(bug);
+        trainerController.replaceTrainer(bug, "Buge");
+
+        verify(trainerService).replaceTrainer(bug, "Buge");
+    }
+
+    @Test
+    void deleteTrainer_shouldCallTheService() {
+        var bug = new Trainer();
+        bug.setName("Bug");
+        trainerController.newTrainer(bug);
+        trainerController.deleteTrainer("Bug");
+
+        verify(trainerService).deleteById("Bug");
     }
 
     @Test
@@ -72,6 +98,50 @@ public class TrainerControllerTest {
 
         assertNotNull(getMapping);
         assertArrayEquals(new String[]{"/{name}"}, getMapping.value());
+
+        assertNotNull(pathVariableAnnotation);
+    }
+
+    @Test
+    void newTrainer_shouldBeAnnotated() throws NoSuchMethodException {
+        var newTrainer =
+                TrainerController.class.getDeclaredMethod("newTrainer", Trainer.class);
+        var postMapping = newTrainer.getAnnotation(PostMapping.class);
+
+        var requestBodyAnnotation = newTrainer.getParameters()[0].getAnnotation(RequestBody.class);
+
+        assertNotNull(postMapping);
+        assertArrayEquals(new String[]{"/"}, postMapping.value());
+
+        assertNotNull(requestBodyAnnotation);
+    }
+
+    @Test
+    void replaceTrainer_shouldBeAnnotated() throws NoSuchMethodException {
+        var replaceTrainer =
+                TrainerController.class.getDeclaredMethod("replaceTrainer", Trainer.class, String.class);
+        var putMapping = replaceTrainer.getAnnotation(PutMapping.class);
+
+        var requestBodyAnnotation = replaceTrainer.getParameters()[0].getAnnotation(RequestBody.class);
+        var pathVariableAnnotation = replaceTrainer.getParameters()[1].getAnnotation(PathVariable.class);
+
+        assertNotNull(putMapping);
+        assertArrayEquals(new String[]{"/{name}"}, putMapping.value());
+
+        assertNotNull(requestBodyAnnotation);
+        assertNotNull(pathVariableAnnotation);
+    }
+
+    @Test
+    void deleteTrainer_shouldBeAnnotated() throws NoSuchMethodException {
+        var deleteTrainer =
+                TrainerController.class.getDeclaredMethod("deleteTrainer", String.class);
+        var deleteMapping = deleteTrainer.getAnnotation(DeleteMapping.class);
+
+        var pathVariableAnnotation = deleteTrainer.getParameters()[0].getAnnotation(PathVariable.class);
+
+        assertNotNull(deleteMapping);
+        assertArrayEquals(new String[]{"/{name}"}, deleteMapping.value());
 
         assertNotNull(pathVariableAnnotation);
     }

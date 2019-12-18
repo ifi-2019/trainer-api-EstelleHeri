@@ -9,4 +9,8 @@ public interface TrainerService {
     Trainer getTrainer(String name);
 
     Trainer createTrainer(Trainer trainer);
+
+    Trainer replaceTrainer(Trainer newTrainer, String name);
+
+    void deleteById(String name);
 }

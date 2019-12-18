@@ -37,4 +37,28 @@ public class TrainerServiceImplTest {
 
         verify(trainerRepo).save(ash);
     }
+
+    @Test
+    void replaceTrainer_shouldCallTheRepository() {
+        var trainerRepo = mock(TrainerRepository.class);
+        var trainerService = new TrainerServiceImpl(trainerRepo);
+
+        var ashe = new Trainer();
+        ashe.setName("Ashe");
+        trainerService.replaceTrainer(ashe,"Ashee");
+
+        verify(trainerRepo).findById("Ashee");
+    }
+
+    @Test
+    void deleteById_shouldCallTheRepository() {
+        var trainerRepo = mock(TrainerRepository.class);
+        var trainerService = new TrainerServiceImpl(trainerRepo);
+
+        var ashe = new Trainer();
+        ashe.setName("Ashe");
+        trainerService.deleteById("Ashe");
+
+        verify(trainerRepo).deleteById("Ashe");
+    }
 }
